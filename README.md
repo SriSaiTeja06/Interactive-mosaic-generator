@@ -15,7 +15,7 @@ Transform any image into an artistic mosaic using predefined colored tiles. This
 
 ```bash
 # Clone the repository
-git clone [your-repo-url]
+git clone https://github.com/SriSaiTeja06/Interactive-mosaic-generator
 cd interactive-mosaic-generator
 
 # Install dependencies
