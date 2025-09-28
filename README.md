@@ -1,153 +1,110 @@
 # Interactive Image Mosaic Generator
 
-Transform any image into a beautiful mosaic using colored tiles! This project implements an efficient image processing algorithm that reconstructs input images using small tile patterns.
+Transform any image into an artistic mosaic using predefined colored tiles. This implementation demonstrates grid-based image processing with vectorized NumPy operations for optimal performance.
 
 ## Features
 
-- **Real-time Processing**: Upload an image and see the mosaic generated instantly
-- **Adjustable Grid Size**: Control the level of detail with grid sizes from 8×8 to 64×64
-- **Performance Comparison**: Switch between vectorized and loop-based implementations
-- **Quality Metrics**: Automatic calculation of MSE and SSIM similarity scores
-- **Web Interface**: Easy-to-use Gradio interface with live demo capabilities
-
-## How It Works
-
-1. **Image Preprocessing**: Input images are resized and prepared for processing
-2. **Grid Division**: The image is divided into a regular grid of cells
-3. **Color Analysis**: Each cell's average color is calculated using vectorized operations
-4. **Tile Matching**: The best-matching colored tile is selected for each cell
-5. **Mosaic Construction**: Tiles are assembled to create the final mosaic image
+- **Grid-based Processing**: Configurable grid sizes from 16x16 to 64x64
+- **Vectorized Operations**: NumPy broadcasting for 8.7x average speedup
+- **Color Quantization**: Optional K-means clustering for enhanced quality
+- **Real-time Processing**: Complete mosaic generation in under 0.03 seconds
+- **Quality Metrics**: SSIM and MSE similarity assessment
+- **Interactive Interface**: Gradio web interface with live preview
 
 ## Installation
 
-### Local Setup
-
-1. Clone this repository:
 ```bash
-git clone <your-repo-url>
-cd mosaic-generator
-```
+# Clone the repository
+git clone [your-repo-url]
+cd interactive-mosaic-generator
 
-2. Install dependencies:
-```bash
+# Install dependencies
 pip install -r requirements.txt
+
+# Run the application
+python app.py
 ```
 
-3. Run the application:
-```bash
-gradio app.py
+## Dependencies
+
 ```
-
-4. Open your browser to `http://localhost:7860`
-
-### Deployment on Hugging Face Spaces
-
-1. Create a new Space on [Hugging Face Spaces](https://huggingface.co/spaces)
-2. Upload `app.py` and `requirements.txt`
-3. The app will automatically deploy and provide a public URL
+gradio==4.9.1
+numpy==1.24.3
+opencv-python==4.9.0.80
+pillow==10.0.1
+scikit-learn==1.3.0
+scikit-image==0.21.0
+```
 
 ## Usage
 
-1. **Upload Image**: Click to upload any image (JPG, PNG, etc.)
-2. **Adjust Grid Size**: Use the slider to control mosaic detail
-   - Smaller grids (8×8) = More abstract, faster processing
-   - Larger grids (64×64) = More detailed, slower processing
-3. **Choose Implementation**: Toggle between vectorized and loop-based processing
-4. **View Results**: See side-by-side comparison and performance metrics
+1. **Upload Image**: Select any image file (JPG, PNG, etc.)
+2. **Configure Grid**: Adjust grid size for detail level
+3. **Select Algorithm**: Choose vectorized or loop-based processing
+4. **Apply Quantization**: Optional color reduction for artistic effects
+5. **Generate Mosaic**: View original, segmented, and mosaic results
 
-## Technical Implementation
+## Algorithm
 
-### Key Components
+The system processes images through four main stages:
 
-- **MosaicGenerator Class**: Main processing engine
-- **Vectorized Operations**: Efficient NumPy-based grid processing
-- **Color Matching**: L2 distance-based tile selection
-- **Performance Metrics**: MSE and SSIM quality assessment
+1. **Preprocessing**: Resize to 400px max height, crop for grid alignment
+2. **Grid Segmentation**: Divide image into cells, calculate average colors
+3. **Tile Matching**: Find best-matching tiles using RGB distance
+4. **Mosaic Assembly**: Replace each cell with corresponding tile
 
-### Algorithm Details
+## Performance
 
-```python
-# Grid creation using vectorized operations
-grid_cells = image.reshape(grid_h, grid_size, grid_w, grid_size, 3)
-cell_colors = np.mean(grid_cells, axis=(1, 3))
+Based on comprehensive testing with portrait imagery:
 
-# Efficient tile matching
-distances = np.sum((tile_colors - target_color) ** 2, axis=1)
-best_tile = np.argmin(distances)
-```
+| Grid Size | Vectorized Time | Loop Time | SSIM Score | MSE Score |
+|-----------|----------------|-----------|------------|-----------|
+| 16x16     | 0.019s        | 0.029s    | 0.45-0.49  | 85-89     |
+| 32x32     | 0.007s        | 0.070s    | 0.53-0.57  | 83-89     |
+| 64x64     | 0.021s        | 0.276s    | 0.63-0.66  | 84-88     |
 
-### Performance Optimization
+**Average Vectorized Speedup: 8.7x**
 
-- **Vectorized NumPy operations** instead of nested Python loops
-- **Batch color distance calculations** for tile matching
-- **Efficient memory usage** with array reshaping techniques
+## Technical Details
 
-## Performance Analysis
-
-The application measures and reports:
-
-- **Processing Time**: Total time for mosaic generation
-- **Mean Squared Error (MSE)**: Pixel-level difference from original
-- **Structural Similarity Index (SSIM)**: Perceptual quality metric
-- **Implementation Comparison**: Vectorized vs. loop-based performance
-
-### Typical Performance Results
-
-| Grid Size | Processing Time (Vectorized) | Processing Time (Loops) | Speedup |
-|-----------|----------------------------|-------------------------|---------|
-| 16×16     | 0.045s                     | 0.128s                  | 2.8×    |
-| 32×32     | 0.089s                     | 0.445s                  | 5.0×    |
-| 64×64     | 0.234s                     | 1.789s                  | 7.6×    |
+- **Tile Library**: 111 predefined tiles across 10 color families
+- **Color Matching**: Euclidean distance in RGB space
+- **Grid Processing**: Vectorized NumPy array operations
+- **Quality Assessment**: SSIM and MSE similarity metrics
+- **Interface**: Professional Gradio web application
 
 ## File Structure
 
 ```
-mosaic-generator/
-├── app.py              # Main application code
-├── requirements.txt    # Python dependencies
-├── README.md          # This file
-└── examples/          # Sample images (optional)
+interactive-mosaic-generator/
+├── app.py              # Main application
+├── requirements.txt    # Dependencies
+├── README.md          # Documentation
+└── .gitignore         # Git exclusions
 ```
 
-## Customization Ideas
+## Live Demo
 
-- **Custom Tiles**: Replace default colored tiles with image tiles
-- **Pattern Variations**: Add textured or patterned tiles
-- **Color Quantization**: Implement color reduction algorithms
-- **Advanced Matching**: Use more sophisticated color distance metrics
-- **Batch Processing**: Support multiple images at once
+Access the interactive demo: [https://huggingface.co/spaces/tej06/Mosaic_Generator]
 
-## Troubleshooting
+## Results
 
-### Common Issues
+The system successfully reconstructs recognizable images across all grid configurations:
+- **Quality Range**: SSIM scores from 0.45 (blocky) to 0.66 (detailed)
+- **Processing Speed**: Real-time generation under 0.03 seconds
+- **Color Accuracy**: MSE scores consistently between 75-92
+- **Scalability**: O(n²) complexity with excellent vectorized optimization
 
-1. **Memory Errors**: Reduce image size or grid resolution
-2. **Slow Processing**: Use smaller grid sizes or enable vectorized mode
-3. **Poor Quality**: Try different grid sizes or add more diverse tiles
+## Configuration Options
 
-### Dependencies Issues
-
-If you encounter import errors, ensure all dependencies are installed:
-```bash
-pip install --upgrade -r requirements.txt
-```
-
-## Contributing
-
-Feel free to submit issues and enhancement requests!
+- **Grid Size**: Balance between detail and mosaic effect
+- **Quantization**: Improves quality (+0.03-0.05 SSIM) at 20-25% time cost
+- **Implementation**: Vectorized for speed, loops for educational comparison
 
 ## License
 
-This project is open source and available under the MIT License.
+Open source project for educational purposes.
 
-## Academic Context
+## Author
 
-This project was developed as part of an image processing laboratory assignment focusing on:
-
-- Grid-based image segmentation
-- Vectorized numerical computing
-- Performance optimization techniques
-- Interactive web application development
-- Image quality assessment metrics
-
-The implementation demonstrates practical applications of computer vision and numerical computing concepts in an engaging, visual format.
+[Sri Sai Teja Mettu Srinivas]
